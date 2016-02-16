@@ -1,12 +1,32 @@
 package net.schnorbus.basti.homeview;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.johnhiott.darkskyandroidlib.RequestBuilder;
+import com.johnhiott.darkskyandroidlib.models.DataPoint;
+import com.johnhiott.darkskyandroidlib.models.Request;
+import com.johnhiott.darkskyandroidlib.models.WeatherResponse;
+
+import net.schnorbus.basti.homeview.util.CustomDigitalClock;
+
+import java.io.File;
+import java.text.DecimalFormat;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -68,6 +88,12 @@ public class FullscreenActivity extends AppCompatActivity {
             hide();
         }
     };
+
+    private CustomDigitalClock clock;
+    private TextView tv;
+    private TextView tvicon;
+    private ImageView image;
+
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
@@ -93,6 +119,13 @@ public class FullscreenActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
+        clock = (CustomDigitalClock) findViewById(R.id.digitalClock1);
+        tv = (TextView) findViewById(R.id.weatherresponse);
+        tvicon = (TextView) findViewById(R.id.weathericon);
+        image = (ImageView) findViewById(R.id.weatherimage);
+        image.setImageResource(R.drawable.sun_128);
+
+        updateWeatherData();
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +139,48 @@ public class FullscreenActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+    }
+
+    private void updateWeatherData() {
+        final RequestBuilder weather = new RequestBuilder();
+        Request request = new Request();
+        request.setLat("49.4135");
+        request.setLng("8.7081");
+        request.setUnits(Request.Units.AUTO);
+        request.setLanguage(Request.Language.PIG_LATIN);
+//        request.addExcludeBlock(Request.Block.CURRENTLY);
+        tv.setText("Weather requested");
+
+        weather.getWeather(request, new Callback<WeatherResponse>() {
+            @Override
+            public void success(WeatherResponse weatherResponse, Response response) {
+                tvicon.setText(weatherResponse.getCurrently().getIcon());
+                updateWeatherUi(weatherResponse.getCurrently());
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d("Tag", "Error while calling: " + error.getUrl() + error.getMessage());
+            }
+        });
+    }
+
+    private void updateWeatherUi(DataPoint weather) {
+        DecimalFormat devFmt = new DecimalFormat("##°");
+        tv.setText(devFmt.format(weather.getTemperature()));
+
+        File imgFile = new File(getWeatherImgName(weather.getIcon(), 128));
+        if (imgFile.exists()) {
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            image.setImageBitmap(myBitmap);
+        }
+        else
+            Log.d("Tag", "Weather Image not available: " + weather.getIcon());
+    }
+
+    @NonNull
+    private String getWeatherImgName(String iconname, int size) {
+        return iconname + "-"+size+".png".replace('-', '_');
     }
 
     @Override
