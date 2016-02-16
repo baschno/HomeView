@@ -14,11 +14,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.johnhiott.darkskyandroidlib.ForecastApi;
 import com.johnhiott.darkskyandroidlib.RequestBuilder;
 import com.johnhiott.darkskyandroidlib.models.DataPoint;
 import com.johnhiott.darkskyandroidlib.models.Request;
 import com.johnhiott.darkskyandroidlib.models.WeatherResponse;
 
+import net.schnorbus.basti.homeview.util.API_Keys;
 import net.schnorbus.basti.homeview.util.CustomDigitalClock;
 
 import java.io.File;
@@ -125,6 +127,7 @@ public class FullscreenActivity extends AppCompatActivity {
         image = (ImageView) findViewById(R.id.weatherimage);
         image.setImageResource(R.drawable.sun_128);
 
+        ForecastApi.create(API_Keys.forecast_io);
         updateWeatherData();
 
         // Set up the user interaction to manually show or hide the system UI.
