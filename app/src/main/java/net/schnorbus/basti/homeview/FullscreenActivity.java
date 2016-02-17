@@ -192,10 +192,11 @@ public class FullscreenActivity extends AppCompatActivity {
 
         double temperature = weather==null ? 18.5 : weather.getTemperature();
         String iconname = weather==null ? "clear-night" : weather.getIcon();
+        String summary = weather==null ? "Cloudy until tomorrow morning" : weather.getSummary();
 
         DecimalFormat devFmt = new DecimalFormat("##°");
         tv.setText(devFmt.format(temperature));
-        tvicon.setText(weather.getSummary());
+        tvicon.setText(summary);
         Bitmap b=getImageByName(createWeatherImgName(iconname, 128), this);
         if (b==null) {
             Log.d("Iconname", "Not found for icon: " + iconname);
