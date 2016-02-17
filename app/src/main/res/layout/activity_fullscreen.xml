@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
+    android:background="#000000"
     tools:context="net.schnorbus.basti.homeview.FullscreenActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
@@ -18,13 +18,14 @@
             android:textColor="#ffffff"
             android:textSize="60pt"
             android:fontFamily="sans-serif-light"
-            android:text="4°" />
+            android:text="4°"
+            android:layout_marginLeft="20px"/>
         <ImageView
             android:layout_width="120px"
             android:layout_height="120px"
             android:id="@+id/weatherimage"
             android:layout_toRightOf="@+id/weatherresponse"
-            android:layout_margin="10px"/>
+            android:layout_margin="25px"/>
 
         <net.schnorbus.basti.homeview.util.CustomDigitalClock
             android:id="@+id/digitalClock1"
@@ -34,7 +35,8 @@
             android:text="Clock"
             android:fontFamily="sans-serif-light"
             android:textColor="#ffffff"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20px"/>
 
         <TextView
             android:id="@+id/weathericon"
@@ -42,6 +44,14 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:textColor="#ffffff"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/textView"
+            android:layout_gravity="left" />
+
 
     </RelativeLayout>
     <TextView

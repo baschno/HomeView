@@ -1,8 +1,11 @@
 package net.schnorbus.basti.homeview;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -23,12 +26,17 @@ import com.johnhiott.darkskyandroidlib.models.WeatherResponse;
 import net.schnorbus.basti.homeview.util.API_Keys;
 import net.schnorbus.basti.homeview.util.CustomDigitalClock;
 
+import org.junit.Test;
+
 import java.io.File;
 import java.text.DecimalFormat;
 
+import dalvik.annotation.TestTarget;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -125,7 +133,6 @@ public class FullscreenActivity extends AppCompatActivity {
         tv = (TextView) findViewById(R.id.weatherresponse);
         tvicon = (TextView) findViewById(R.id.weathericon);
         image = (ImageView) findViewById(R.id.weatherimage);
-        image.setImageResource(R.drawable.sun_128);
 
         ForecastApi.create(API_Keys.forecast_io);
         updateWeatherData();
@@ -164,26 +171,50 @@ public class FullscreenActivity extends AppCompatActivity {
             @Override
             public void failure(RetrofitError error) {
                 Log.d("Tag", "Error while calling: " + error.getUrl() + error.getMessage());
+                //update with mock data
+                updateWeatherUi(null);
             }
         });
     }
 
+    public Bitmap getImageByName(String nameOfTheDrawable, Activity a){
+        Drawable drawFromPath;
+        int path = a.getResources().getIdentifier(nameOfTheDrawable, "drawable", "net.schnorbus.basti.homeview");
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        Bitmap source = BitmapFactory.decodeResource(a.getResources(), path, options);
+
+        return source;
+    }
+
     private void updateWeatherUi(DataPoint weather) {
+
+        double temperature = weather==null ? 18.5 : weather.getTemperature();
+        String iconname = weather==null ? "clear-night" : weather.getIcon();
+
         DecimalFormat devFmt = new DecimalFormat("##°");
         tv.setText(devFmt.format(weather.getTemperature()));
 
-        File imgFile = new File(getWeatherImgName(weather.getIcon(), 128));
-        if (imgFile.exists()) {
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            image.setImageBitmap(myBitmap);
+        Bitmap b=getImageByName(createWeatherImgName(iconname, 128), this);
+        if (b==null) {
+            Log.d("Iconname", "Not found for icon: " + iconname);
         }
         else
-            Log.d("Tag", "Weather Image not available: " + weather.getIcon());
+            image.setImageBitmap(b);
     }
 
     @NonNull
-    private String getWeatherImgName(String iconname, int size) {
-        return iconname + "-"+size+".png".replace('-', '_');
+    private String createWeatherImgName(String iconname, int size) {
+        StringBuilder sb = new StringBuilder(iconname);
+        sb.append("_").append(size);
+
+        return sb.toString().replace('-', '_');
+    }
+
+    @Test
+    public void testWeatherImgFilename() {
+      assertEquals("little_rain_128", createWeatherImgName("little-rain", 128));
     }
 
     @Override
