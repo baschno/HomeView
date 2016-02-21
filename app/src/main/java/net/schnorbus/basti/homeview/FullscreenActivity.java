@@ -2,6 +2,7 @@ package net.schnorbus.basti.homeview;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.johnhiott.darkskyandroidlib.ForecastApi;
 import com.johnhiott.darkskyandroidlib.RequestBuilder;
@@ -135,7 +137,8 @@ public class FullscreenActivity extends AppCompatActivity {
         image = (ImageView) findViewById(R.id.weatherimage);
 
         ForecastApi.create(API_Keys.forecast_io);
-        updateWeatherData();
+        //updateWeatherData();
+        handler.post(runnableCode);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -156,10 +159,17 @@ public class FullscreenActivity extends AppCompatActivity {
         Request request = new Request();
         request.setLat("49.4135");
         request.setLng("8.7081");
-        request.setUnits(Request.Units.AUTO);
+        request.setUnits(Request.Units.CA);
         request.setLanguage(Request.Language.PIG_LATIN);
 //        request.addExcludeBlock(Request.Block.CURRENTLY);
-        tv.setText("Weather requested");
+        //tv.setText("Weather requested");
+
+        Context context = getApplicationContext();
+        CharSequence text = "Weather update requested";
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
 
         weather.getWeather(request, new Callback<WeatherResponse>() {
             @Override
@@ -248,6 +258,8 @@ public class FullscreenActivity extends AppCompatActivity {
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
+
+        handler.removeCallbacks(runnableCode);
     }
 
     @SuppressLint("InlinedApi")
@@ -270,4 +282,16 @@ public class FullscreenActivity extends AppCompatActivity {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
+
+    Handler handler=new Handler();
+
+    private Runnable runnableCode = new Runnable() {
+        @Override
+        public void run() {
+            updateWeatherData();
+            Log.d("Handlers", "Called on main thread");
+
+            handler.postDelayed(runnableCode, 120000);
+        }
+    };
 }
