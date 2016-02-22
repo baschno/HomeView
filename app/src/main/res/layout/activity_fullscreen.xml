@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
+    android:padding="20px"
     tools:context="net.schnorbus.basti.homeview.FullscreenActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
@@ -19,10 +20,10 @@
             android:textSize="60pt"
             android:fontFamily="sans-serif-light"
             android:text="4°"
-            android:layout_marginLeft="20px"/>
+            />
         <ImageView
-            android:layout_width="120px"
-            android:layout_height="120px"
+            android:layout_width="128px"
+            android:layout_height="128px"
             android:id="@+id/weatherimage"
             android:layout_toRightOf="@+id/weatherresponse"
             android:layout_margin="25px"/>
@@ -36,7 +37,7 @@
             android:fontFamily="sans-serif-light"
             android:textColor="#ffffff"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="20px"/>
+            />
 
         <TextView
             android:id="@+id/weathericon"
@@ -52,8 +53,57 @@
             android:id="@+id/textView"
             android:layout_gravity="left" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/update_timestamp"
+            android:layout_below="@+id/weatherresponse"
+            android:textColor="#ffffff"
+            android:text="Updated: kkkkk"/>
 
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dayofweek"
+            android:textColor="#ffffff"
+            android:textSize="16pt"
+            android:layout_alignParentRight="true"
+            android:fontFamily="sans-serif-light"
+            android:text="22. Februar"/>
+        <TextView
+            android:id="@+id/dayofweek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/digitalClock1"
+            android:textColor="#ffffff"
+            android:textSize="16pt"
+            android:layout_marginTop="10px"
+            android:fontFamily="sans-serif-light"
+            android:text="Sunday"
+            android:layout_gravity="right|top" />
     </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/fullscreen_content_controls"
+        style="?metaButtonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@color/black_overlay"
+        android:orientation="horizontal"
+        tools:ignore="UselessParent">
+
+        <Button
+            android:id="@+id/dummy_button"
+            style="?metaButtonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/dummy_button" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
@@ -67,30 +117,5 @@
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
-
-        <LinearLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="?metaButtonBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@color/black_overlay"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
-
-            <Button
-                android:id="@+id/dummy_button"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/dummy_button" />
-
-        </LinearLayout>
-    </FrameLayout>
 
 </FrameLayout>

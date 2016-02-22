@@ -32,6 +32,10 @@ import org.junit.Test;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import dalvik.annotation.TestTarget;
 import retrofit.Callback;
@@ -104,8 +108,10 @@ public class FullscreenActivity extends AppCompatActivity {
     private CustomDigitalClock clock;
     private TextView tv;
     private TextView tvicon;
+    private TextView tv_update;
+    private TextView tv_dayofweek;
+    private TextView tv_date;
     private ImageView image;
-
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
@@ -135,6 +141,9 @@ public class FullscreenActivity extends AppCompatActivity {
         tv = (TextView) findViewById(R.id.weatherresponse);
         tvicon = (TextView) findViewById(R.id.weathericon);
         image = (ImageView) findViewById(R.id.weatherimage);
+        tv_update=(TextView)findViewById(R.id.update_timestamp);
+        tv_date=(TextView)findViewById(R.id.date);
+        tv_dayofweek=(TextView)findViewById(R.id.dayofweek);
 
         ForecastApi.create(API_Keys.forecast_io);
         //updateWeatherData();
@@ -198,6 +207,8 @@ public class FullscreenActivity extends AppCompatActivity {
         return source;
     }
 
+    private final String[] dayofweek = {"Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"};
+
     private void updateWeatherUi(DataPoint weather) {
 
         double temperature = weather==null ? 18.5 : weather.getTemperature();
@@ -207,7 +218,17 @@ public class FullscreenActivity extends AppCompatActivity {
         DecimalFormat devFmt = new DecimalFormat("##°");
         tv.setText(devFmt.format(temperature));
         tvicon.setText(summary);
-        Bitmap b=getImageByName(createWeatherImgName(iconname, 128), this);
+        SimpleDateFormat s = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
+        tv_update.setText("Update: "+s.format(new Date()));
+        String weekDay;
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.GERMAN);
+
+        Calendar calendar = Calendar.getInstance();
+        tv_dayofweek.setText(dayFormat.format(calendar.getTime()));
+
+        s=new SimpleDateFormat("dd. MMMM");
+        tv_date.setText(s.format(new Date()));
+        Bitmap b=getImageByName(createWeatherImgName("and", iconname, 128), this);
         if (b==null) {
             Log.d("Iconname", "Not found for icon: " + iconname);
         }
@@ -217,8 +238,18 @@ public class FullscreenActivity extends AppCompatActivity {
 
     @NonNull
     private String createWeatherImgName(String iconname, int size) {
-        StringBuilder sb = new StringBuilder(iconname);
-        sb.append("_").append(size);
+        return createWeatherImgName("", iconname, size);
+    }
+
+    private String createWeatherImgName(String prefix, String iconname, int size) {
+        StringBuilder sb = new StringBuilder(prefix);
+
+        if (sb.toString().length()>0)
+            sb.append("_");
+
+        sb.append(iconname)
+            .append("_")
+            .append(size);
 
         return sb.toString().replace('-', '_');
     }
@@ -226,6 +257,11 @@ public class FullscreenActivity extends AppCompatActivity {
     @Test
     public void testWeatherImgFilename() {
       assertEquals("little_rain_128", createWeatherImgName("little-rain", 128));
+    }
+
+    @Test
+    public void testWeatherImgFilenameWithPrefix() {
+        assertEquals("w10_partly_cloudy_36", createWeatherImgName("w10", "partly-cloudy", 36));
     }
 
     @Override
